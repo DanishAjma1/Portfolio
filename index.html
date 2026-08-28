@@ -1,105 +1,732 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Danish Ajmal | Full-Stack Engineer Portfolio</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- React & ReactDOM CDNs -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    
-    <!-- Babel Standalone to compile JSX in browser -->
+    <!-- Terminal / Code Icon (Minimalist Web Favicon) -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300F0FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='16 18 22 12 16 6'></polyline><polyline points='8 6 2 12 8 18'></polyline></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+      crossorigin
+    ></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      html { scroll-behavior: smooth; }
-      body { background: #0A0C10; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: #0a0c10;
+        font-family: "Inter", system-ui, sans-serif;
+        color: #f1f5f9;
+        overflow-x: hidden;
+      }
+
+      /* ── Scrollbar ── */
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(0, 240, 255, 0.25);
+        border-radius: 2px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 240, 255, 0.5);
+      }
+
+      /* ── Horizontal scroll container ── */
+      .hscroll {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1rem;
+        cursor: grab;
+        user-select: none;
+      }
+      .hscroll.grabbing {
+        cursor: grabbing;
+      }
+      .hscroll > * {
+        scroll-snap-align: start;
+        flex-shrink: 0;
+      }
+
+      /* ── Pills scrollable row ── */
+      .pill-row {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        flex-wrap: nowrap;
+      }
+      .pill-row::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* ── Animations ── */
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .fi {
+        animation: fadein 0.55s ease both;
+      }
+
+      /* ── Responsive grid helpers ── */
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+      }
+      .stack-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.25rem;
+      }
+      .sys-grid {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+      }
+
+      /* ── Nav Hamburger Button ── */
+      .nav-hamburger {
+        display: none;
+        background: transparent;
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        color: #00f0ff;
+        font-size: 1.2rem;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+      }
+      /* ── Mobile Nav Modal Overlay ── */
+      #navModal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 12, 16, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 400;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+      #navModal.open {
+        display: flex;
+      }
+
+      @media (max-width: 900px) {
+        .about-grid {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+        .sys-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 800px) {
+        .stats-row {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .nav-hamburger {
+          display: flex;
+        }
+
+        .bul:nth-child(n + 4) {
+          display: none;
+        }
+      }
+
+      /* ── Card base ── */
+      .card {
+        background: #12161f;
+        border: 1px solid rgba(0, 240, 255, 0.08);
+        border-radius: 12px;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s,
+          transform 0.2s;
+      }
+      .card:hover {
+        border-color: rgba(0, 240, 255, 0.28);
+        box-shadow: 0 0 22px rgba(0, 240, 255, 0.07);
+      }
+
+      /* ── Tag ── */
+      .tag {
+        display: inline-block;
+        background: rgba(0, 240, 255, 0.06);
+        border: 1px solid rgba(0, 240, 255, 0.13);
+        color: #94a3b8;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-family: monospace;
+        white-space: nowrap;
+      }
+
+      /* ── Section ── */
+      .sec {
+        padding: 4rem 1.5rem;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      /* ── Timeline ── */
+      .timeline {
+        padding-left: 1.5rem;
+        border-left: 1px solid rgba(0, 240, 255, 0.2);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      /* ── Bullet ── */
+      .bul {
+        display: flex;
+        gap: 8px;
+        color: #94a3b8;
+        font-size: 0.83rem;
+        line-height: 1.6;
+        padding: 3px 0;
+      }
+      .bul-dot {
+        color: #00f0ff;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* ── Tech badge ── */
+      .tbul {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 4px 0;
+        font-size: 0.82rem;
+        color: #cbd5e1;
+      }
+      .tbul-dot {
+        color: #00f0ff;
+        flex-shrink: 0;
+        margin-top: 2px;
+        font-size: 0.9rem;
+      }
+
+      /* ── Project card ── */
+      .proj-card {
+        width: 350px;
+        padding: 1.4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        height: 325px;
+      }
+      @media (max-width: 480px) {
+        .proj-card {
+          width: 350px;
+        }
+      }
+
+      /* ── Scroll hint ── */
+      .scroll-hint {
+        font-size: 11px;
+        color: #475569;
+        font-family: monospace;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* ── Modal ── */
+      #modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 12, 16, 0.9);
+        backdrop-filter: blur(10px);
+        z-index: 300;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        overflow-y: auto;
+      }
+      #modal.open {
+        display: flex;
+      }
+      #mbox {
+        background: #12161f;
+        border-radius: 16px;
+        padding: 1.75rem;
+        max-width: 560px;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+        border: 1px solid rgba(0, 240, 255, 0.15);
+      }
+
+      /* ── Nav ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 99;
+        background: rgba(10, 12, 16, 0.88);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(0, 240, 255, 0.06);
+        padding: 0 1.5rem;
+      }
+      .nav-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 54px;
+      }
+      .nav-logo {
+        font-family: monospace;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #00f0ff;
+        text-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+        white-space: nowrap;
+      }
+      .nav-link {
+        color: #94a3b8;
+        padding-right: 1rem;
+        font-size: 12px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.2s;
+        white-space: nowrap;
+      }
+      .nav-link:hover {
+        color: #00f0ff;
+      }
+      .nav-cta {
+        border: 1px solid #00f0ff;
+        color: #00f0ff;
+        padding: 5px 13px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s;
+        white-space: nowrap;
+      }
+      .nav-cta:hover {
+        background: rgba(0, 240, 255, 0.1);
+      }
+
+      /* ── Section header ── */
+      .sec-label {
+        color: #00f0ff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        font-family: monospace;
+        margin-bottom: 6px;
+      }
+      .sec-title {
+        color: #f1f5f9;
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      /* ── Misc ── */
+      button {
+        font-family: inherit;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="modal" onclick="if (event.target === this) closeModal();">
+      <div id="mbox"></div>
+    </div>
+    <div
+      id="navModal"
+      onclick="if (event.target === this) closeNavModal();"
+    ></div>
 
     <script type="text/babel">
       const { useState, useEffect, useRef } = React;
 
-      const NAV_LINKS = ["About", "Stack", "Projects", "SystemDesign", "Experience", "Contact"];
+      /* ─────────────────── DATA ─────────────────── */
 
-      const TECH_STACK = {
-        "Frontend": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Redux / Zustand"],
-        "Backend & APIs": ["Java Spring Boot", "Node.js", "Express", "NestJS", "RESTful APIs", "GraphQL"],
-        "Databases & Caching": ["PostgreSQL", "MongoDB", "Redis", "Query Tuning", "Cache Eviction"],
-        "DevOps & Cloud": ["Docker", "Kubernetes (basics)", "GitHub Actions CI/CD", "AWS EC2/S3/Lambda", "LocalStack"],
-      };
+      const TECH_STACK = [
+        {
+          cat: "Frontend Engineering",
+          accent: "#00F0FF",
+          items: [
+            { name: "React.js", expert: true },
+            { name: "Next.js (App Router)", expert: true },
+            { name: "TypeScript", expert: true },
+            { name: "Tailwind CSS", expert: true },
+            { name: "Thymeleaf", expert: false },
+            { name: "Redux / Zustand", expert: true },
+          ],
+        },
+        {
+          cat: "Backend & APIs",
+          accent: "#10B981",
+          items: [
+            { name: "Node.js", expert: true },
+            { name: "Express.js", expert: true },
+            { name: "NestJS", expert: false },
+            { name: "Java Spring Boot", expert: true },
+            { name: "RESTful APIs", expert: true },
+            { name: "WebSockets / Socket.io", expert: true },
+          ],
+        },
+        {
+          cat: "Database & Caching",
+          accent: "#F59E0B",
+          items: [
+            { name: "PostgreSQL", expert: true },
+            { name: "MongoDB", expert: true },
+            { name: "Redis", expert: true },
+            { name: "Prisma ORM", expert: false },
+            { name: "AWS DynamoDB", expert: false },
+          ],
+        },
+        {
+          cat: "DevOps & Infrastructure",
+          accent: "#818CF8",
+          items: [
+            { name: "Docker", expert: true },
+            { name: "GitHub Actions / CI-CD", expert: true },
+            { name: "AWS (Lambda, EventBridge)", expert: true },
+            { name: "LocalStack", expert: false },
+            { name: "Monorepo Architecture", expert: true },
+          ],
+        },
+        {
+          cat: "Async Architecture & Queuing",
+          accent: "#EC4899",
+          items: [
+            { name: "BullMQ", expert: true },
+            { name: "Redis Pub/Sub", expert: true },
+            { name: "State Machines", expert: false },
+            { name: "Multi-Tenant Isolation", expert: true },
+          ],
+        },
+        {
+          cat: "AI & Dev Workflows",
+          accent: "#3B82F6",
+          items: [
+            { name: "Gemini API", expert: true },
+            { name: "OpenAI API", expert: true },
+            { name: "Claude Code CLI", expert: true },
+            { name: "LLM Orchestration", expert: true },
+            { name: "SendGrid Integration", expert: false },
+          ],
+        },
+      ];
 
       const PROJECTS = [
         {
           id: 1,
-          title: "Multi-Courier & Fleet Management Platform",
-          type: "Enterprise System",
-          tech: ["Java Spring Boot", "PostgreSQL", "Redis", "Thymeleaf", "Docker", "GitHub Actions"],
-          description: "Enterprise multi-tenant system handling state machines for shipment lifecycles. Implemented role-based access control (RBAC) and query optimization to eliminate N+1 latency across high-volume courier operations.",
-          highlights: [
-            "Redis caching layer reducing DB hits by ~60%",
-            "Multi-stage Docker CI/CD pipeline — zero-downtime deploys",
-            "RBAC with granular tenant isolation across enterprise accounts",
-            "State machine architecture for shipment lifecycle management",
-          ],
+          type: "Enterprise AI Platform",
           accent: "#00F0FF",
+          title: "TrustBridge-AI: Entrepreneur & Investor Collaboration",
+          link: "https://trustbridge-ai.com",
+          tech: [
+            "Next.js",
+            "TypeScript",
+            "Node.js",
+            "LLM APIs",
+            "WebSockets",
+            "Stripe",
+          ],
+          desc: "Enterprise platform connecting startups and venture investors under administrative governance. Features deep LLM integration for automated campaign validation, real-time negotiation rooms, and automated deal-room workflows.",
+          highlights: [
+            "Integrated heavy LLM orchestration for automated pitch analysis & campaign scoring",
+            "Real-time deal rooms & collaborative workspaces using Socket.io and WebSockets",
+            "Multi-tier administrative oversight & compliance auditing dashboard",
+            "End-to-end campaign lifecycle management with Stripe subscription flows",
+          ],
+        },
+        // {
+        //   id: 2,
+        //   type: "Enterprise System",
+        //   accent: "#818CF8",
+        //   title: "Multi-Tenant Enterprise Logistics & Courier Engine",
+        //   link: "https://trustbridge-ai.com",
+        //   tech: [
+        //     "Java Spring Boot",
+        //     "PostgreSQL",
+        //     "Redis",
+        //     "Thymeleaf",
+        //     "Docker",
+        //     "GitHub Actions",
+        //   ],
+        //   desc: "Multi-tenant SaaS allowing courier companies to isolate and manage fleet vehicles, driver assignments, and state-machine-driven shipment lifecycles per tenant.",
+        //   highlights: [
+        //     "Strict data isolation per tenant using PostgreSQL Row-Level Security",
+        //     "Full fleet lifecycle management - vehicles, drivers, routes, and dynamic dispatch",
+        //     "Redis caching layer reducing DB hits by ~60% across high-frequency tracking requests",
+        //     "Zero-downtime blue/green deployment pipeline via Docker and GitHub Actions",
+        //   ],
+        // },
+        {
+          id: 3,
+          type: "Multi-Tenant Engine",
+          accent: "#F59E0B",
+          title: "Multi-Tenant: School workflow automation SaaS Platform",
+          link: "https://academix-drab-three.vercel.app/login",
+          tech: [
+            "Next.js (App Router)",
+            "TypeScript",
+            "NestJS",
+            "PostgreSQL",
+            "BullMQ",
+            "Redis",
+          ],
+          desc: "Unified multi-tenant backend powering specialized industry portals concurrently - school management engines, queue-less slot booking, and high-converting marketing agency landers.",
+          highlights: [
+            "Check it now using these credentials: Email: saraadmin@oakridge.com | Password: Admin-123",
+            "Dynamic domain & subdomain routing engine mapping custom tenant URLs",
+            "Real-time queue management and automated meeting scheduler integration",
+            "Centralized lead acquisition pipeline routing incoming agency leads to CRMs",
+            "RBAC handling cross-organizational administrative permissions",
+          ],
+        },
+        // {
+        //   id: 4,
+        //   type: "Full-Stack Platform",
+        //   accent: "#10B981",
+        //   title: "Enterprise Monorepo E-Commerce & Logistics Engine",
+        //   link: "https://trustbridge-ai.com",
+        //   tech: [
+        //     "Next.js (App Router)",
+        //     "TypeScript",
+        //     "Express.js",
+        //     "BullMQ",
+        //     "Redis",
+        //     "Tailwind CSS",
+        //   ],
+        //   desc: "Unified administrative platform with automated task queuing for background job processing and async event updates across a monorepo architecture serving multiple business units.",
+        //   highlights: [
+        //     "BullMQ job queues for async order processing at scale",
+        //     "Next.js App Router with SSR + ISR for dynamic catalog pages",
+        //     "Monorepo architecture with shared TypeScript type contracts",
+        //     "Real-time logistics event updates via Redis Pub/Sub",
+        //   ],
+        // },
+        {
+          id: 5,
+          type: "Local Business Automation",
+          accent: "#06B6D4",
+          title: "Smart Dental Clinic & EHR Management Suite",
+          link: "https://dentist-clinic-appointment.vercel.app/",
+          tech: [
+            "React.js",
+            "Node.js",
+            "Express.js",
+            "MongoDB",
+            "Tailwind CSS",
+          ],
+          desc: "Digital health administration suite for dental clinics - automating patient intake, treatment history, recurring checkup reminders, and billing workflows.",
+          highlights: [
+            "Interactive dental chart mapping and digitized electronic health records (EHR)",
+            "Automated SMS/Email appointment reminders reducing missed visits by 35%",
+            "Admin dashboard for inventory control, billing, and daily revenue reporting",
+          ],
         },
         {
-          id: 2,
-          title: "Enterprise Monorepo E-Commerce & Logistics Engine",
-          type: "Full-Stack Platform",
-          tech: ["Next.js (App Router)", "TypeScript", "Express.js", "BullMQ", "Redis", "Tailwind CSS"],
-          description: "Unified administrative platform with automated task queuing for background job processing and asynchronous event updates across a monorepo architecture serving multiple business units.",
-          highlights: [
-            "BullMQ job queues for async order processing at scale",
-            "Next.js App Router with SSR + ISR for dynamic catalog pages",
-            "Monorepo architecture with shared type contracts (TypeScript)",
-            "Real-time logistics event updates via Redis Pub/Sub",
+          id: 6,
+          type: "Local Business Automation",
+          accent: "#EC4899",
+          title: "PropTech Real Estate Operations & Lead Engine",
+          link: "https://real-estate-web-demo-nine.vercel.app",
+          tech: [
+            "Next.js",
+            "TypeScript",
+            "PostgreSQL",
+            "Prisma",
+            "Tailwind CSS",
           ],
-          accent: "#10B981",
+          desc: "End-to-end real estate management portal automating property listing distribution, client inquiry pipelines, agent assignment logic, and walkthrough scheduling.",
+          highlights: [
+            "Automated lead distribution engine routing buyers to available agents",
+            "Dynamic listing filter with GIS/location-based search optimization",
+            "Client portal for tracking offer statuses and digital property dossiers",
+          ],
+        },
+        {
+          id: 7,
+          type: "Local Business Automation",
+          accent: "#3B82F6",
+          title: "Fitness: Gym Membership & POS Management",
+          link: "https://fintness-platform.vercel.app/",
+          tech: ["React.js", "Node.js", "MongoDB", "Express.js", "Stripe API"],
+          desc: "All-in-one gym admin system streamlining member check-ins, automated recurring billing, trainer schedules, and POS operations.",
+          highlights: [
+            "QR code check-in integration for instant member access verification",
+            "Automated subscription recurring payments and dunning management via Stripe",
+            "Trainer booking module for personal training session scheduling",
+          ],
+        },
+        {
+          id: 8,
+          type: "Local Business Automation",
+          accent: "#A855F7",
+          title: "Barber Shop: Salon Scheduling & Resource Engine",
+          link: "https://barber-shop-pi-ivory.vercel.app/",
+          tech: [
+            "React.js",
+            "TypeScript",
+            "Express.js",
+            "PostgreSQL",
+            "Tailwind CSS",
+          ],
+          desc: "Client booking portal and admin panel for saloons - optimizing daily schedules, staff assignment by expertise, and product inventory management.",
+          highlights: [
+            "Real-time slot availability calendar preventing double-bookings across stylists",
+            "Client preference profiles tracking past services and treatment history",
+            "Integrated POS for service checkout and retail product sales",
+          ],
+        },
+        {
+          id: 9,
+          type: "Local Business Automation",
+          accent: "#EF4444",
+          title: "Ember&Oak: Restaurant Automate Web & POS Solution",
+          link: "https://resturant-automate.vercel.app/",
+          tech: [
+            "React.js",
+            "Node.js",
+            "WebSockets",
+            "MongoDB",
+            "Tailwind CSS",
+          ],
+          desc: "Operation-focused restaurant management integrating touch-screen POS, Kitchen Display Systems (KDS), and customer loyalty automation.",
+          highlights: [
+            "Instant WebSocket sync between front-of-house POS and Kitchen Display Systems",
+            "WinCRM client management tracking dining habits and automated loyalty perks",
+            "Table reservation engine with automated waiting list management",
+          ],
         },
       ];
 
-      const SYSTEM_DESIGN_CARDS = [
+      const SYS_CARDS = [
         {
           title: "Performance Optimization",
-          icon: "⚡",
           accent: "#00F0FF",
           items: [
-            "Redis caching strategies (TTL, LRU eviction policies)",
-            "JPA Query optimization & N+1 elimination",
-            "Next.js bundle reduction via dynamic imports",
-            "PostgreSQL index design for high-throughput queries",
+            "Redis caching - TTL policies, LRU eviction, and cache invalidation strategies",
+            "Event-driven processing with BullMQ queues and async workers",
+            "PostgreSQL composite indexes, partial indexes, and EXPLAIN ANALYZE",
+            "JPA N+1 elimination via JOIN FETCH, batch fetching, and DTOs",
+            "Next.js bundle reduction - dynamic imports, tree shaking, code splitting",
+            "Database connection pooling and query result caching patterns",
+          ],
+        },
+        {
+          title: "Event-Driven Microservices",
+          accent: "#10B981",
+          items: [
+            "Event-driven architecture with decoupled producers and consumers",
+            "BullMQ / Redis Pub/Sub for reliable async message passing",
+            "Service-level isolation with well-defined API contracts",
+            "Dead-letter queues and retry policies for fault-tolerant processing",
+            "WebSocket event broadcasting for real-time UI synchronization",
+            "Idempotent event handlers preventing duplicate processing",
           ],
         },
         {
           title: "DevOps & Reliability",
-          icon: "🔁",
-          accent: "#10B981",
+          accent: "#818CF8",
           items: [
-            "Multi-stage Docker builds for minimal image footprint",
-            "GitHub Actions CI/CD with automated test gates",
-            "LocalStack for AWS service simulation in dev",
+            "AWS deployments - EC2, S3, Lambda with environment-specific configs",
+            "Vercel and Railway for frontend and Node.js service deployments",
+            "Multi-stage Docker builds minimizing production image footprint",
+            "GitHub Actions CI/CD with automated test gates before merge",
+            "Nginx reverse proxy with SSL termination and rate limiting",
             "Zero-downtime blue/green deployment strategies",
           ],
         },
         {
-          title: "Code Quality & Testing",
-          icon: "🧪",
-          accent: "#818CF8",
+          title: "Testing & Code Quality",
+          accent: "#F59E0B",
           items: [
-            "JUnit 5 unit tests with Mockito for Spring Boot services",
-            "Testcontainers for real DB integration testing",
-            "Automated ESLint + Prettier enforcement in CI",
-            "PR review checklists & architecture decision records",
+            "Jest - unit and integration tests for Node.js services and APIs",
+            "Playwright - end-to-end browser automation and UI regression tests",
+            "JUnit 5 + Mockito - unit tests for Java Spring Boot service layers",
+            "Testcontainers - real PostgreSQL/Redis integration testing in CI",
+            "Automated ESLint, Prettier, and checkstyle enforcement in pipeline",
+            "Architecture decision records and PR review checklists",
           ],
         },
       ];
@@ -108,127 +735,220 @@
         {
           role: "Full Stack Developer",
           company: "ABCDMedia.co.uk",
-          location: "Wazirabad, Pakistan (On-site)",
+          loc: "Wazirabad, Pakistan (UK Remote)",
           period: "Nov 2025 – May 2026",
+          current: true,
           bullets: [
-            "Architected multi-tenant CRM with JWT-based RBAC and PostgreSQL RLS, isolating 10+ enterprise accounts",
-            "Integrated OpenAI and Google Ads APIs to automate analytics workflows and reduce manual client operations",
-            "Built high-concurrency B2C platform with Next.js SSR and React.js hooks architecture; boosted engagement 20%",
-            "Reduced server response times 30% via query optimization and Redis caching across Node.js/PostgreSQL services",
-          ],
-        },
-        {
-          role: "Full Stack Developer",
-          company: "TrustBridge-AI Solutions",
-          location: "Gujrat, Pakistan (Remote)",
-          period: "Aug 2025 – Nov 2025",
-          bullets: [
-            "Designed RESTful APIs with Node.js/Express.js establishing clear data contracts for high-concurrency MERN platform",
-            "Built real-time collaboration platform using WebSockets and Socket.io managing concurrent sessions at scale",
-            "Integrated Stripe payment gateway (subscriptions, webhooks) and Agora WebRTC for peer-to-peer calling",
-            "Wrote MongoDB aggregation pipelines powering multi-stage analytics dashboards with complex transformation logic",
+            "Boosted platform engagement by 20% by architecting a modular React.js/Next.js component library with hooks-based state management on a live B2C production platform",
+            "Reduced server response times by 30% by implementing Redis caching, PostgreSQL query optimization, and fault-tolerant service design across Node.js backend services",
+            "Isolated 10+ enterprise client accounts by engineering a multi-tenant CRM with JWT-RBAC and PostgreSQL Row-Level Security, eliminating cross-tenant data exposure",
+            "Automated client analytics workflows by integrating OpenAI, Gemini, and Google Ads APIs, replacing manual reporting operations with AI-driven pipeline processing",
+            "Maintained zero-downtime production releases by owning CI/CD pipelines with Docker multi-stage builds and GitHub Actions automated deployment workflows",
           ],
         },
         {
           role: "MERN Stack Developer",
           company: "Developers Hub Corporation",
-          location: "Islamabad, Pakistan (Remote)",
-          period: "May 2025 – Aug 2025",
+          loc: "Islamabad, Pakistan (Remote)",
+          period: "May 2025 – Nov 2025",
           bullets: [
-            "Engineered modular e-commerce platform on MERN stack with MongoDB schemas and Express.js APIs for scale",
-            "Implemented JWT authentication and RBAC authorization across all platform routes; deployed on AWS with Nginx",
-            "Wrote unit and integration tests using Jest; integrated third-party APIs using modular adapter patterns",
+            "Improved real-time collaboration reliability for concurrent users by building WebSocket and Socket.io infrastructure managing session state and low-latency event sync",
+            "Accelerated analytics delivery for enterprise clients by designing MongoDB aggregation pipelines powering multi-stage reporting dashboards with complex query logic",
+            "Delivered seamless payment infrastructure end-to-end by integrating Stripe subscriptions, webhook lifecycle management, and Agora WebRTC as first-class platform features",
+            "Secured all platform surfaces by implementing JWT-RBAC with granular permission layers and establishing clear RESTful API contracts across the high-concurrency MERN platform",
+            "Increased codebase reliability by writing Jest unit and integration tests and integrating third-party APIs using modular adapter patterns for maintainable delivery",
           ],
         },
         {
-          role: "Java Developer (Desktop Application)",
+          role: "Full Stack Developer",
           company: "Meganous Software",
-          location: "Gujrat, Pakistan (On-site)",
-          period: "Jan 2024 – Apr 2024",
+          loc: "Gujrat, Pakistan (On-site)",
+          period: "Jun 2023 – Dec 2024",
           bullets: [
-            "Built Java desktop application establishing OOP fundamentals: class hierarchies, interfaces, abstract classes",
-            "Integrated JDBC persistence layer with prepared statements, CRUD operations, and transaction management",
-            "Applied Factory and Singleton design patterns; developed event-driven GUI with JForms and validation",
+            "Increased page load speeds and user session retention by 20% by developing responsive client applications using React.js, Next.js, and Tailwind CSS across multiple client projects",
+            "Accelerated complex analytical query execution by optimizing MongoDB indexing strategies and Mongoose aggregation pipelines across high-traffic data layers",
+            "Hardened application security and server stability using PM2 process management, CORS header validation, request rate-limiting, and input sanitization",
+          ],
+        },
+        {
+          role: "Web Developer (Internship)",
+          company: "TwinSpider Technologies",
+          loc: "Gujrat, Pakistan (On-site)",
+          period: "May 2023 – Jun 2023",
+          bullets: [
+            "Engineered backend service modules using Object-Oriented Programming (OOP) principles, standardizing class abstractions, dependency injection, and reusable business logic across application layers.",
+            "Wired end-to-end web architectures, binding responsive front-end views to RESTful backend endpoints for seamless asynchronous data flow and state synchronization.",
+            "Implemented background job processing queues using Redis and BullMQ, offloading heavy computational tasks and asynchronous data workflows to prevent main-thread execution blocking.",
+            "Integrated dynamic transactional email services via SendGrid, configuring HTML templates, retry mechanisms, and automated dispatch triggers for user authentication",
           ],
         },
       ];
 
+      /* ─────────────────── TYPEWRITER ─────────────────── */
       function useTypewriter(words, speed = 80, pause = 1800) {
         const [displayed, setDisplayed] = useState("");
-        const [wordIdx, setWordIdx] = useState(0);
-        const [charIdx, setCharIdx] = useState(0);
-        const [deleting, setDeleting] = useState(false);
-
+        const [wi, setWi] = useState(0);
+        const [ci, setCi] = useState(0);
+        const [del, setDel] = useState(false);
         useEffect(() => {
-          const current = words[wordIdx];
-          let timeout;
-          if (!deleting && charIdx <= current.length) {
-            timeout = setTimeout(() => {
-              setDisplayed(current.slice(0, charIdx));
-              setCharIdx((c) => c + 1);
+          const cur = words[wi];
+          let t;
+          if (!del && ci <= cur.length) {
+            t = setTimeout(() => {
+              setDisplayed(cur.slice(0, ci));
+              setCi((c) => c + 1);
             }, speed);
-          } else if (!deleting && charIdx > current.length) {
-            timeout = setTimeout(() => setDeleting(true), pause);
-          } else if (deleting && charIdx > 0) {
-            timeout = setTimeout(() => {
-              setDisplayed(current.slice(0, charIdx - 1));
-              setCharIdx((c) => c - 1);
+          } else if (!del) {
+            t = setTimeout(() => setDel(true), pause);
+          } else if (del && ci > 0) {
+            t = setTimeout(() => {
+              setDisplayed(cur.slice(0, ci - 1));
+              setCi((c) => c - 1);
             }, speed / 2);
           } else {
-            setDeleting(false);
-            setWordIdx((i) => (i + 1) % words.length);
+            setDel(false);
+            setWi((i) => (i + 1) % words.length);
           }
-          return () => clearTimeout(timeout);
-        }, [charIdx, deleting, wordIdx, words, speed, pause]);
-
+          return () => clearTimeout(t);
+        }, [ci, del, wi]);
         return displayed;
       }
 
-      function Navbar() {
-        const [scrolled, setScrolled] = useState(false);
+      /* ─────────────────── DRAG SCROLL ─────────────────── */
+      function useDragScroll() {
+        const ref = useRef(null);
+        const down = useRef(false);
+        const startX = useRef(0);
+        const scrollLeft = useRef(0);
         useEffect(() => {
-          const fn = () => setScrolled(window.scrollY > 20);
-          window.addEventListener("scroll", fn);
-          return () => window.removeEventListener("scroll", fn);
+          const el = ref.current;
+          if (!el) return;
+          const onDown = (e) => {
+            down.current = true;
+            startX.current = e.pageX - el.offsetLeft;
+            scrollLeft.current = el.scrollLeft;
+            el.classList.add("grabbing");
+          };
+          const onUp = () => {
+            down.current = false;
+            el.classList.remove("grabbing");
+          };
+          const onMove = (e) => {
+            if (!down.current) return;
+            e.preventDefault();
+            const x = e.pageX - el.offsetLeft;
+            el.scrollLeft = scrollLeft.current - (x - startX.current) * 1.5;
+          };
+          el.addEventListener("mousedown", onDown);
+          el.addEventListener("mouseup", onUp);
+          el.addEventListener("mouseleave", onUp);
+          el.addEventListener("mousemove", onMove);
+          return () => {
+            el.removeEventListener("mousedown", onDown);
+            el.removeEventListener("mouseup", onUp);
+            el.removeEventListener("mouseleave", onUp);
+            el.removeEventListener("mousemove", onMove);
+          };
         }, []);
+        return ref;
+      }
 
+      /* ─────────────────── MODAL HELPERS ─────────────────── */
+      function openModal(p) {
+        document.getElementById("mbox").innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                  <span style="color:${p.accent};font-family:monospace;font-size:10px;font-weight:700">${p.type}</span>
+                  <button onclick="closeModal()" style="background:none;border:none;color:#94A3B8;cursor:pointer;font-size:1rem">✕</button>
+                </div>
+                <h3 style="color:#F1F5F9;font-size:1rem;font-weight:800;margin-bottom:.6rem;line-height:1.35">${p.title}</h3>
+                <p style="color:#94A3B8;font-size:.83rem;line-height:1.65;margin-bottom:1rem">${p.desc}</p>
+                <p style="color:${p.accent};font-size:9px;font-weight:700;letter-spacing:.12em;font-family:monospace;margin-bottom:.5rem">KEY HIGHLIGHTS</p>
+                <ul style="list-style:none;padding:0;margin-bottom:1rem">${p.highlights.map((h) => `<li style="display:flex;gap:8px;color:#CBD5E1;font-size:.82rem;padding:.35rem 0;border-bottom:1px solid rgba(148,163,184,0.07)"><span style="color:${p.accent};flex-shrink:0">→</span>${h}</li>`).join("")}</ul>
+                <div style="display:flex;flex-wrap:wrap;gap:5px">${p.tech.map((t) => `<span style="background:${p.accent}12;border:1px solid ${p.accent}25;color:${p.accent};padding:2px 8px;border-radius:4px;font-size:10px;font-family:monospace">${t}</span>`).join("")}</div>`;
+        document.getElementById("modal").classList.add("open");
+      }
+      window.closeModal = () =>
+        document.getElementById("modal").classList.remove("open");
+
+      function openNavModal() {
+        const links = [
+          { label: "About", href: "#about" },
+          { label: "Stack", href: "#stack" },
+          { label: "Projects", href: "#projects" },
+          { label: "System Design", href: "#system-design" },
+          { label: "Experience", href: "#experience" },
+          { label: "Contact", href: "#contact" },
+        ];
+
+        const modalEl = document.getElementById("navModal");
+        modalEl.innerHTML = `
+          <div style="background:#12161F; border:1px solid rgba(0,240,255,0.2); border-radius:16px; padding:1.5rem; width:100%; max-width:400px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+              <span style="color:#00F0FF; font-family:monospace; font-weight:700">NAVIGATION</span>
+              <button onclick="closeNavModal()" style="background:none; border:none; color:#94A3B8; cursor:pointer; font-size:1.2rem">✕</button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:1rem">
+              ${links
+                .map(
+                  (link) => `
+                <a href="${link.href}" onclick="closeNavModal()" style="color:#CBD5E1; text-decoration:none; font-size:1rem; font-weight:500; padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.05)">
+                  ${link.label}
+                </a>
+              `,
+                )
+                .join("")}
+            </div>
+          </div>
+        `;
+        modalEl.classList.add("open");
+      }
+
+      function closeNavModal() {
+        document.getElementById("navModal").classList.remove("open");
+      }
+
+      window.openNavModal = openNavModal;
+      window.closeNavModal = closeNavModal;
+
+      /* ─────────────────── SECTION HEADER ─────────────────── */
+      function SH({ label, title, center }) {
         return (
-          <nav
+          <div
             style={{
-              position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-              background: scrolled ? "rgba(10,12,16,0.85)" : "transparent",
-              backdropFilter: scrolled ? "blur(12px)" : "none",
-              borderBottom: scrolled ? "1px solid rgba(0,240,255,0.08)" : "none",
-              transition: "all 0.3s ease",
-              padding: "0 2rem",
+              textAlign: center ? "center" : "left",
+              marginBottom: "2rem",
             }}
           >
-            <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-              <span style={{ fontFamily: "monospace", fontSize: "1.3rem", fontWeight: 700, color: "#00F0FF", textShadow: "0 0 12px rgba(0,240,255,0.6)" }}>
-                {"<DA />"}
-              </span>
-              <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
-                {NAV_LINKS.map((link) => (
-                  <a
-                    key={link}
-                    href={`#${link.toLowerCase()}`}
-                    style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500, transition: "color 0.2s" }}
-                    onMouseEnter={(e) => (e.target.style.color = "#00F0FF")}
-                    onMouseLeave={(e) => (e.target.style.color = "#94A3B8")}
-                  >
-                    {link}
+            <p className="sec-label">// {label}</p>
+            <h2 className="sec-title">{title}</h2>
+          </div>
+        );
+      }
+
+      /* ─────────────────── NAVBAR ─────────────────── */
+      function Navbar() {
+        const links = [
+          "About",
+          "Stack",
+          "Projects",
+          "SystemDesign",
+          "Experience",
+          "Contact",
+        ];
+        return (
+          <nav>
+            <div className="nav-inner">
+              <span className="nav-logo">&lt;DANISH AJMAL /&gt;</span>
+              <button onClick={openNavModal} className="nav-hamburger">
+                ☰
+              </button>
+              <div className="nav-links">
+                {links.map((l) => (
+                  <a key={l} href={`#${l.toLowerCase()}`} className="nav-link">
+                    {l}
                   </a>
                 ))}
-                <a
-                  href="#contact"
-                  style={{
-                    border: "1px solid #00F0FF", color: "#00F0FF", padding: "0.4rem 1rem",
-                    borderRadius: 6, fontSize: "0.875rem", textDecoration: "none", fontWeight: 600,
-                    transition: "all 0.2s", boxShadow: "0 0 8px rgba(0,240,255,0.15)",
-                  }}
-                  onMouseEnter={(e) => { e.target.style.background = "rgba(0,240,255,0.1)"; e.target.style.boxShadow = "0 0 16px rgba(0,240,255,0.35)"; }}
-                  onMouseLeave={(e) => { e.target.style.background = "transparent"; e.target.style.boxShadow = "0 0 8px rgba(0,240,255,0.15)"; }}
-                >
+                <a href="#contact" className="nav-cta">
                   View Resume
                 </a>
               </div>
@@ -237,6 +957,7 @@
         );
       }
 
+      /* ─────────────────── HERO ─────────────────── */
       function Hero() {
         const typed = useTypewriter([
           "Scalable Microservices",
@@ -245,278 +966,849 @@
           "Enterprise Applications",
           "Next.js Full-Stack Platforms",
         ]);
-
         return (
-          <section id="about" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", padding: "6rem 2rem 4rem", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 600, background: "radial-gradient(circle, rgba(0,240,255,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
+          <section
+            id="about"
+            style={{
+              minHeight: "100vh",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              textAlign: "center",
+              padding: "6rem 1.5rem 4rem",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: "35%",
+                left: "50%",
+                transform: "translate(-50%,-50%)",
+                width: 550,
+                height: 550,
+                background:
+                  "radial-gradient(circle,rgba(0,240,255,0.04) 0%,transparent 70%)",
+                pointerEvents: "none",
+              }}
+            />
 
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: 20, padding: "0.4rem 1rem", marginBottom: "2rem", fontSize: "0.8rem", color: "#10B981", fontWeight: 600 }}>
-              🟢 Available for Full-Time Roles (Pakistan & Relocation to EU/Germany)
+            <div
+              className="fi"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                background: "rgba(16,185,129,0.1)",
+                border: "1px solid rgba(16,185,129,0.3)",
+                borderRadius: 20,
+                padding: "5px 14px",
+                marginBottom: "1.75rem",
+                fontSize: 12,
+                color: "#10B981",
+                fontWeight: 600,
+              }}
+            >
+              🟢 Open to Work - Remote Worldwide · Onsite in Pakistan
             </div>
 
-            <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 800, color: "#F1F5F9", lineHeight: 1.15, maxWidth: 800, marginBottom: "1rem" }}>
-              Engineering High-Throughput<br />
-              <span style={{ color: "#00F0FF" }}>Web Platforms</span> & Scalable Systems
+            <h1
+              className="fi"
+              style={{
+                fontSize: "clamp(1.75rem,5vw,3.2rem)",
+                fontWeight: 800,
+                color: "#F1F5F9",
+                lineHeight: 1.15,
+                maxWidth: 780,
+                marginBottom: "1rem",
+                animationDelay: ".05s",
+              }}
+            >
+              Engineering High-Throughput
+              <br />
+              <span style={{ color: "#00F0FF" }}>Web Platforms</span> &amp;
+              Scalable Systems
             </h1>
 
-            <div style={{ fontFamily: "monospace", fontSize: "clamp(1rem, 2.5vw, 1.25rem)", color: "#94A3B8", marginBottom: "1.5rem", minHeight: "2rem" }}>
+            <div
+              className="fi"
+              style={{
+                fontFamily: "monospace",
+                fontSize: "clamp(.9rem,2.5vw,1.15rem)",
+                color: "#94A3B8",
+                marginBottom: "1.25rem",
+                minHeight: "1.8rem",
+                animationDelay: ".1s",
+              }}
+            >
               <span style={{ color: "#00F0FF" }}>$ </span>
               <span style={{ color: "#F1F5F9" }}>architect</span>
               <span style={{ color: "#94A3B8" }}> --focus </span>
               <span style={{ color: "#10B981" }}>{typed}</span>
-              <span style={{ color: "#00F0FF", animation: "blink 1s step-end infinite" }}>▮</span>
+              <span
+                style={{
+                  color: "#00F0FF",
+                  animation: "blink 1s step-end infinite",
+                }}
+              >
+                ▮
+              </span>
             </div>
 
-            <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: 640, lineHeight: 1.7, marginBottom: "2.5rem" }}>
-              Full-Stack Engineer with 2+ years building production-grade web applications using Next.js, TypeScript, Node.js, and Java Spring Boot — focused on systems that perform under pressure.
+            <p
+              className="fi muted"
+              style={{
+                fontSize: ".9rem",
+                maxWidth: 600,
+                lineHeight: 1.75,
+                marginBottom: "2.25rem",
+                animationDelay: ".15s",
+              }}
+            >
+              Full-Stack Engineer with a proven track record of architecting, building, and deploying 10+ production-grade web applications. Proficient across the entire software development lifecycle—streamlining ideas from initial conception to high-availability deployment using Next.js, TypeScript, Node.js, Express, and Java Spring Boot. Focused on modern cloud infrastructure, database optimization, and scalable backend architecture designed to perform under pressure.
             </p>
 
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-              <a href="#systemdesign" style={{ background: "#00F0FF", color: "#0A0C10", padding: "0.75rem 1.75rem", borderRadius: 8, fontWeight: 700, textDecoration: "none", fontSize: "0.95rem", boxShadow: "0 0 24px rgba(0,240,255,0.3)", transition: "box-shadow 0.2s" }}
-                onMouseEnter={(e) => (e.target.style.boxShadow = "0 0 40px rgba(0,240,255,0.55)")}
-                onMouseLeave={(e) => (e.target.style.boxShadow = "0 0 24px rgba(0,240,255,0.3)")}>
-                Explore Architecture
+            <div
+              className="fi"
+              style={{
+                display: "flex",
+                gap: ".75rem",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                animationDelay: ".2s",
+              }}
+            >
+              <a
+                href="#systemdesign"
+                style={{
+                  display: "inline-block",
+                  background: "#00F0FF",
+                  padding: "10px 22px",
+                  borderRadius: 8,
+                  fontWeight: 700,
+                  fontSize: ".875rem",
+                  textDecoration: "none",
+                  boxShadow: "0 0 22px rgba(0,240,255,0.3)",
+                  transition: "box-shadow .2s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    "0 0 38px rgba(0,240,255,0.55)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.boxShadow =
+                    "0 0 22px rgba(0,240,255,0.3)")
+                }
+              >
+                <span style={{ color: "#000000" }}>Explore Architecture</span>
               </a>
-              <a href="#contact" style={{ border: "1px solid rgba(148,163,184,0.3)", color: "#F1F5F9", padding: "0.75rem 1.75rem", borderRadius: 8, fontWeight: 600, textDecoration: "none", fontSize: "0.95rem", transition: "border-color 0.2s" }}
+              <a
+                href="#contact"
+                style={{
+                  border: "1px solid rgba(148,163,184,0.28)",
+                  color: "#F1F5F9",
+                  padding: "10px 22px",
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  fontSize: ".875rem",
+                  transition: "border-color .2s",
+                }}
                 onMouseEnter={(e) => (e.target.style.borderColor = "#00F0FF")}
-                onMouseLeave={(e) => (e.target.style.borderColor = "rgba(148,163,184,0.3)")}>
+                onMouseLeave={(e) =>
+                  (e.target.style.borderColor = "rgba(148,163,184,0.28)")
+                }
+              >
                 Get in Touch
               </a>
             </div>
-
-            <style>{`@keyframes blink { 50% { opacity: 0; } }`}</style>
+            <style>{`@keyframes blink{50%{opacity:0}}`}</style>
           </section>
         );
       }
 
+      /* ─────────────────── TECH STACK ─────────────────── */
       function TechStack() {
+        const [active, setActive] = useState("All");
+        const [hov, setHov] = useState(null);
+        const cats = ["All", ...TECH_STACK.map((s) => s.cat)];
+        const filtered =
+          active === "All"
+            ? TECH_STACK
+            : TECH_STACK.filter((s) => s.cat === active);
         return (
-          <section id="stack" style={{ padding: "5rem 2rem", maxWidth: 1200, margin: "0 auto" }}>
-            <SectionHeader label="CAPABILITIES" title="Tech Stack Matrix" />
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.25rem", marginTop: "3rem" }}>
-              {Object.entries(TECH_STACK).map(([category, items]) => (
-                <div key={category} style={{ background: "#12161F", border: "1px solid rgba(0,240,255,0.08)", borderRadius: 12, padding: "1.5rem", transition: "border-color 0.2s, box-shadow 0.2s" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,240,255,0.3)"; e.currentTarget.style.boxShadow = "0 0 20px rgba(0,240,255,0.06)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,240,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}>
-                  <p style={{ color: "#00F0FF", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem", fontFamily: "monospace" }}>
-                    {category}
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                    {items.map((item) => (
-                      <span key={item} style={{ background: "rgba(0,240,255,0.06)", border: "1px solid rgba(0,240,255,0.12)", color: "#CBD5E1", padding: "0.3rem 0.7rem", borderRadius: 6, fontSize: "0.8rem", fontWeight: 500 }}>
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
+          <section
+            id="stack"
+            className="sec"
+            style={{ background: "rgba(18,22,31,0.5)" }}
+          >
+            <div className="wrap">
+              <SH label="CAPABILITIES" title="Tech Stack Matrix" />
+              {/* filter pills */}
+              <div className="pill-row" style={{ marginBottom: "1.5rem" }}>
+                {cats.map((c) => {
+                  const on = active === c;
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => setActive(c)}
+                      style={{
+                        background: on
+                          ? "rgba(0,240,255,0.12)"
+                          : "rgba(18,22,31,0.7)",
+                        border: on
+                          ? "1px solid #00F0FF"
+                          : "1px solid rgba(255,255,255,0.08)",
+                        color: on ? "#00F0FF" : "#94A3B8",
+                        padding: "5px 14px",
+                        borderRadius: 20,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        transition: "all .2s",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {c}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="stack-grid">
+                {filtered.map((s, idx) => {
+                  const isH = hov === s.cat;
+                  return (
+                    <div
+                      key={s.cat}
+                      onMouseEnter={() => setHov(s.cat)}
+                      onMouseLeave={() => setHov(null)}
+                      style={{
+                        background:
+                          "linear-gradient(145deg,rgba(18,22,31,0.95),rgba(13,17,23,0.98))",
+                        border: isH
+                          ? `1px solid ${s.accent}`
+                          : "1px solid rgba(255,255,255,0.07)",
+                        borderRadius: 14,
+                        padding: "1.5rem",
+                        position: "relative",
+                        overflow: "hidden",
+                        transition: "all .3s",
+                        transform: isH ? "translateY(-3px)" : "none",
+                        boxShadow: isH
+                          ? `0 12px 28px -8px ${s.accent}20`
+                          : "0 4px 18px rgba(0,0,0,0.3)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: -40,
+                          right: -40,
+                          width: 100,
+                          height: 100,
+                          background: s.accent,
+                          opacity: isH ? 0.1 : 0.03,
+                          filter: "blur(35px)",
+                          borderRadius: "50%",
+                          pointerEvents: "none",
+                          transition: "opacity .3s",
+                        }}
+                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "1.1rem",
+                        }}
+                      >
+                        <p
+                          style={{
+                            color: isH ? s.accent : "#F1F5F9",
+                            fontSize: 11,
+                            fontWeight: 700,
+                            letterSpacing: ".06em",
+                            textTransform: "uppercase",
+                            fontFamily: "monospace",
+                            transition: "color .2s",
+                          }}
+                        >
+                          {s.cat}
+                        </p>
+                        <span
+                          style={{
+                            fontSize: 10,
+                            color: "rgba(255,255,255,0.25)",
+                            fontFamily: "monospace",
+                          }}
+                        >
+                          0{idx + 1}
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                        }}
+                      >
+                        {s.items.map((item) => (
+                          <div key={item.name} className="tbul">
+                            <span
+                              className="tbul-dot"
+                              style={{ color: s.accent }}
+                            >
+                              ›
+                            </span>
+                            <span
+                              style={{
+                                color: item.expert ? "#F1F5F9" : "#94A3B8",
+                              }}
+                            >
+                              {item.name}
+                            </span>
+                            {item.expert && (
+                              <span
+                                style={{
+                                  width: 4,
+                                  height: 4,
+                                  borderRadius: "50%",
+                                  background: s.accent,
+                                  boxShadow: `0 0 5px ${s.accent}`,
+                                  display: "inline-block",
+                                  flexShrink: 0,
+                                  marginTop: 5,
+                                  marginLeft: 2,
+                                }}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <p
+                style={{
+                  textAlign: "center",
+                  marginTop: "1rem",
+                  fontSize: 10,
+                  color: "#475569",
+                  fontFamily: "monospace",
+                }}
+              >
+                · glowing dot = Expert proficiency
+              </p>
             </div>
           </section>
         );
       }
 
+      /* ─────────────────── PROJECTS ─────────────────── */
       function Projects() {
-        const [activeProject, setActiveProject] = useState(null);
-
         return (
-          <section id="projects" style={{ padding: "5rem 2rem", background: "rgba(18,22,31,0.4)" }}>
-            <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-              <SectionHeader label="FEATURED WORK" title="Production Projects" />
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", marginTop: "3rem" }}>
-                {PROJECTS.map((project) => (
+          <section id="projects" className="sec">
+            <div className="wrap">
+              <SH label="SHIPPED WORK" title="Production Projects" />
+              <div className="scroll-hint">
+                <span>←</span> scroll or drag to explore {PROJECTS.length}{" "}
+                projects <span>→</span>
+              </div>
+              <div className="hscroll">
+                {PROJECTS.map((p) => (
                   <div
-                    key={project.id}
-                    onClick={() => setActiveProject(project)}
-                    style={{ background: "#12161F", border: `1px solid rgba(0,240,255,0.08)`, borderRadius: 14, padding: "2rem", cursor: "pointer", transition: "all 0.2s" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = project.accent + "55"; e.currentTarget.style.boxShadow = `0 0 24px ${project.accent}10`; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,240,255,0.08)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none"; }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                      <span style={{ background: `${project.accent}15`, border: `1px solid ${project.accent}33`, color: project.accent, padding: "0.25rem 0.6rem", borderRadius: 6, fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em" }}>
-                        {project.type}
-                      </span>
-                      <span style={{ color: "#475569", fontSize: "1.1rem" }}>↗</span>
-                    </div>
-                    <h3 style={{ color: "#F1F5F9", fontWeight: 700, fontSize: "1.05rem", marginBottom: "0.75rem", lineHeight: 1.4 }}>{project.title}</h3>
-                    <p style={{ color: "#94A3B8", fontSize: "0.875rem", lineHeight: 1.6, marginBottom: "1.25rem" }}>{project.description}</p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                      {project.tech.slice(0, 4).map((t) => (
-                        <span key={t} style={{ background: "rgba(148,163,184,0.07)", color: "#64748B", padding: "0.2rem 0.5rem", borderRadius: 4, fontSize: "0.72rem", fontFamily: "monospace" }}>{t}</span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {activeProject && (
-              <div onClick={() => setActiveProject(null)} style={{ position: "fixed", inset: 0, background: "rgba(10,12,16,0.85)", backdropFilter: "blur(8px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-                <div onClick={(e) => e.stopPropagation()} style={{ background: "#12161F", border: `1px solid ${activeProject.accent}44`, borderRadius: 16, padding: "2.5rem", maxWidth: 600, width: "100%", boxShadow: `0 0 60px ${activeProject.accent}15` }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-                    <span style={{ color: activeProject.accent, fontFamily: "monospace", fontSize: "0.8rem", fontWeight: 700 }}>{activeProject.type}</span>
-                    <button onClick={() => setActiveProject(null)} style={{ background: "none", border: "none", color: "#94A3B8", cursor: "pointer", fontSize: "1.2rem" }}>✕</button>
-                  </div>
-                  <h2 style={{ color: "#F1F5F9", fontWeight: 800, fontSize: "1.25rem", marginBottom: "1rem" }}>{activeProject.title}</h2>
-                  <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: "1.5rem" }}>{activeProject.description}</p>
-                  <p style={{ color: activeProject.accent, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", marginBottom: "0.75rem", fontFamily: "monospace" }}>KEY HIGHLIGHTS</p>
-                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1.5rem" }}>
-                    {activeProject.highlights.map((h, i) => (
-                      <li key={i} style={{ color: "#CBD5E1", fontSize: "0.875rem", padding: "0.4rem 0", borderBottom: "1px solid rgba(148,163,184,0.06)", display: "flex", gap: "0.75rem" }}>
-                        <span style={{ color: activeProject.accent, flexShrink: 0 }}>→</span> {h}
-                      </li>
-                    ))}
-                  </ul>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                    {activeProject.tech.map((t) => (
-                      <span key={t} style={{ background: `${activeProject.accent}10`, border: `1px solid ${activeProject.accent}22`, color: activeProject.accent, padding: "0.25rem 0.6rem", borderRadius: 5, fontSize: "0.75rem", fontFamily: "monospace" }}>{t}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </section>
-        );
-      }
-
-      function SystemDesign() {
-        const [active, setActive] = useState(0);
-        const card = SYSTEM_DESIGN_CARDS[active];
-
-        return (
-          <section id="systemdesign" style={{ padding: "5rem 2rem", maxWidth: 1200, margin: "0 auto" }}>
-            <SectionHeader label="ENGINEERING STRENGTHS" title="System Architecture" />
-            <div style={{ marginTop: "3rem", display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "2rem", alignItems: "start" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                {SYSTEM_DESIGN_CARDS.map((c, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActive(i)}
+                    key={p.id}
+                    className="card proj-card"
                     style={{
-                      background: active === i ? `${c.accent}10` : "#12161F",
-                      border: `1px solid ${active === i ? c.accent + "44" : "rgba(0,240,255,0.08)"}`,
-                      borderRadius: 10, padding: "1rem 1.25rem", cursor: "pointer", textAlign: "left",
-                      transition: "all 0.2s", display: "flex", alignItems: "center", gap: "0.75rem",
+                      borderColor: `${p.accent}22`,
+                      cursor: "pointer",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.75rem",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = `${p.accent}55`;
+                      e.currentTarget.style.transform = "translateY(-3px)";
+                      e.currentTarget.style.boxShadow = `0 0 20px ${p.accent}10`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = `${p.accent}22`;
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                    onClick={() => {
+                      // Primary card action: opens project URL in a new tab
+                      if (p.link || p.liveUrl) {
+                        window.open(
+                          p.link || p.liveUrl,
+                          "_blank",
+                          "noopener,noreferrer",
+                        );
+                      }
                     }}
                   >
-                    <span style={{ fontSize: "1.3rem" }}>{c.icon}</span>
-                    <span style={{ color: active === i ? c.accent : "#94A3B8", fontWeight: 600, fontSize: "0.9rem" }}>{c.title}</span>
-                  </button>
-                ))}
-              </div>
+                    {/* Card Header */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <span
+                        style={{
+                          background: `${p.accent}15`,
+                          border: `1px solid ${p.accent}30`,
+                          color: p.accent,
+                          padding: "2px 7px",
+                          borderRadius: 4,
+                          fontSize: 9,
+                          fontWeight: 700,
+                          letterSpacing: ".07em",
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        {p.type}
+                      </span>
+                      <span style={{ color: "#475569", fontSize: ".85rem" }}>
+                        ↗
+                      </span>
+                    </div>
 
-              <div style={{ background: "#12161F", border: `1px solid ${card.accent}33`, borderRadius: 14, padding: "2rem", boxShadow: `0 0 30px ${card.accent}08` }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
-                  <span style={{ fontSize: "1.5rem" }}>{card.icon}</span>
-                  <h3 style={{ color: card.accent, fontWeight: 700, fontSize: "1.1rem" }}>{card.title}</h3>
-                </div>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {card.items.map((item, i) => (
-                    <li key={i} style={{ display: "flex", gap: "0.75rem", padding: "0.75rem 0", borderBottom: i < card.items.length - 1 ? "1px solid rgba(148,163,184,0.07)" : "none" }}>
-                      <span style={{ color: card.accent, fontFamily: "monospace", fontSize: "0.85rem", flexShrink: 0, paddingTop: "0.05rem" }}>{"0" + (i + 1)}</span>
-                      <span style={{ color: "#CBD5E1", fontSize: "0.9rem", lineHeight: 1.6 }}>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+                    {/* Card Content */}
+                    <h3
+                      style={{
+                        color: "#F1F5F9",
+                        lineHeight: 1.35,
+                        fontSize: "1rem",
+                        margin: 0,
+                      }}
+                    >
+                      {p.title}
+                    </h3>
+
+                    <p
+                      style={{
+                        color: "#94A3B8",
+                        fontSize: ".8rem",
+                        lineHeight: 1.55,
+                        flex: 1,
+                        margin: 0,
+                      }}
+                    >
+                      {(p.desc || p.description)?.slice(0, 130)}…
+                    </p>
+
+                    {/* Tech Badges */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                      {p.tech.slice(0, 4).map((t) => (
+                        <span key={t} className="tag">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Separate Action Button */}
+                    <button
+                      type="button"
+                      style={{
+                        width: "100%",
+                        background: `${p.accent}08`,
+                        border: `1px solid ${p.accent}18`,
+                        color: p.accent,
+                        padding: "7px",
+                        borderRadius: 6,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        transition: "background .2s",
+                        marginTop: "auto",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.background = `${p.accent}15`)
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.background = `${p.accent}08`)
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation(); // Stops main card redirect from firing
+                        openModal(p);
+                      }}
+                    >
+                      View Details
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
         );
       }
 
+      /* ─────────────────── SYSTEM DESIGN ─────────────────── */
+      function SystemDesign() {
+        const [active, setActive] = useState(0);
+        const c = SYS_CARDS[active];
+        return (
+          <section
+            id="systemdesign"
+            className="sec"
+            style={{ background: "rgba(18,22,31,0.5)" }}
+          >
+            <div className="wrap">
+              <SH label="ENGINEERING STRENGTHS" title="System Architecture" />
+              <div className="sys-grid">
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: ".6rem",
+                  }}
+                >
+                  {SYS_CARDS.map((card, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActive(i)}
+                      style={{
+                        background:
+                          active === i ? `${card.accent}10` : "#12161F",
+                        border: `1px solid ${active === i ? card.accent + "40" : "rgba(0,240,255,0.08)"}`,
+                        borderRadius: 10,
+                        padding: ".85rem 1.1rem",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        transition: "all .2s",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: ".6rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 7,
+                          height: 7,
+                          borderRadius: "50%",
+                          background: card.accent,
+                          boxShadow:
+                            active === i ? `0 0 8px ${card.accent}` : "none",
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span
+                        style={{
+                          color: active === i ? card.accent : "#94A3B8",
+                          fontWeight: 600,
+                          fontSize: ".875rem",
+                        }}
+                      >
+                        {card.title}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <div
+                  style={{
+                    background: "#12161F",
+                    border: `1px solid ${c.accent}30`,
+                    borderRadius: 14,
+                    padding: "1.75rem",
+                    boxShadow: `0 0 28px ${c.accent}08`,
+                  }}
+                >
+                  <h3
+                    style={{
+                      color: c.accent,
+                      fontWeight: 700,
+                      fontSize: "1rem",
+                      marginBottom: "1.25rem",
+                    }}
+                  >
+                    {c.title}
+                  </h3>
+                  {c.items.map((item, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        display: "flex",
+                        gap: ".6rem",
+                        padding: ".55rem 0",
+                        borderBottom:
+                          i < c.items.length - 1
+                            ? "1px solid rgba(148,163,184,0.07)"
+                            : "none",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: c.accent,
+                          fontFamily: "monospace",
+                          fontSize: ".78rem",
+                          flexShrink: 0,
+                          marginTop: 1,
+                          fontWeight: 700,
+                        }}
+                      >
+                        0{i + 1}
+                      </span>
+                      <span
+                        style={{
+                          color: "#CBD5E1",
+                          fontSize: ".85rem",
+                          lineHeight: 1.55,
+                        }}
+                      >
+                        {item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      /* ─────────────────── EXPERIENCE ─────────────────── */
       function Experience() {
         return (
-          <section id="experience" style={{ padding: "5rem 2rem", background: "rgba(18,22,31,0.4)" }}>
-            <div style={{ maxWidth: 900, margin: "0 auto" }}>
-              <SectionHeader label="TRACK RECORD" title="Work Experience" />
-              <div style={{ marginTop: "3rem", position: "relative" }}>
-                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 1, background: "linear-gradient(to bottom, #00F0FF33, transparent)" }} />
-                <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem", paddingLeft: "2rem" }}>
-                  {EXPERIENCE.map((exp, i) => (
-                    <div key={i} style={{ position: "relative" }}>
-                      <div style={{ position: "absolute", left: "-2.375rem", top: 4, width: 10, height: 10, borderRadius: "50%", background: i === 0 ? "#00F0FF" : "#1E293B", border: "2px solid #00F0FF", boxShadow: i === 0 ? "0 0 10px rgba(0,240,255,0.6)" : "none" }} />
-                      <div style={{ background: "#12161F", border: "1px solid rgba(0,240,255,0.08)", borderRadius: 12, padding: "1.5rem 1.75rem", transition: "border-color 0.2s" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(0,240,255,0.25)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(0,240,255,0.08)")}>
-                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem", gap: "0.5rem" }}>
-                          <div>
-                            <h3 style={{ color: "#F1F5F9", fontWeight: 700, fontSize: "1rem" }}>{exp.role}</h3>
-                            <p style={{ color: "#00F0FF", fontSize: "0.875rem", fontWeight: 600 }}>{exp.company}</p>
-                          </div>
-                          <div style={{ textAlign: "right" }}>
-                            <span style={{ color: "#94A3B8", fontSize: "0.8rem", fontFamily: "monospace" }}>{exp.period}</span>
-                            <p style={{ color: "#475569", fontSize: "0.75rem", marginTop: "0.2rem" }}>{exp.location}</p>
-                          </div>
+          <section id="experience" className="sec">
+            <div className="wrap" style={{ maxWidth: 860 }}>
+              <SH label="TRACK RECORD" title="Work Experience" />
+              <div className="timeline">
+                {EXPERIENCE.map((exp, i) => (
+                  <div key={i} style={{ position: "relative" }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: "-28px",
+                        top: 8,
+                        width: 9,
+                        height: 9,
+                        borderRadius: "50%",
+                        background: i === 0 ? "#00F0FF" : "#1E293B",
+                        border: "2px solid #00F0FF",
+                        boxShadow:
+                          i === 0 ? "0 0 10px rgba(0,240,255,0.6)" : "none",
+                      }}
+                    />
+                    <div
+                      className="card"
+                      style={{ padding: "1.25rem 1.5rem" }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.borderColor =
+                          "rgba(0,240,255,0.25)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.borderColor =
+                          "rgba(0,240,255,0.08)")
+                      }
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          gap: ".4rem",
+                          marginBottom: ".5rem",
+                        }}
+                      >
+                        <div>
+                          <p
+                            style={{
+                              color: "#F1F5F9",
+                              fontWeight: 700,
+                              fontSize: ".9rem",
+                            }}
+                          >
+                            {exp.role}
+                            {exp.current && (
+                              <span
+                                style={{
+                                  marginLeft: 8,
+                                  background: "rgba(16,185,129,0.12)",
+                                  border: "1px solid rgba(16,185,129,0.3)",
+                                  color: "#10B981",
+                                  padding: "1px 7px",
+                                  borderRadius: 10,
+                                  fontSize: 9,
+                                  fontWeight: 600,
+                                }}
+                              >
+                                Recent
+                              </span>
+                            )}
+                          </p>
+                          <p
+                            style={{
+                              color: "#00F0FF",
+                              fontSize: ".8rem",
+                              fontWeight: 600,
+                              marginTop: 2,
+                            }}
+                          >
+                            {exp.company}
+                          </p>
                         </div>
-                        <ul style={{ margin: "1rem 0 0", padding: 0, listStyle: "none" }}>
+                        <div style={{ textAlign: "right" }}>
+                          <span
+                            style={{
+                              color: "#94A3B8",
+                              fontSize: ".75rem",
+                              fontFamily: "monospace",
+                            }}
+                          >
+                            {exp.period}
+                          </span>
+                          <p
+                            style={{
+                              color: "#475569",
+                              fontSize: ".7rem",
+                              marginTop: 2,
+                            }}
+                          >
+                            {exp.loc}
+                          </p>
+                        </div>
+                      </div>
+                      {exp.bullets.length > 0 && (
+                        <ul
+                          style={{
+                            listStyle: "none",
+                            padding: 0,
+                            marginTop: ".5rem",
+                          }}
+                        >
                           {exp.bullets.map((b, j) => (
-                            <li key={j} style={{ display: "flex", gap: "0.6rem", color: "#94A3B8", fontSize: "0.855rem", lineHeight: 1.6, padding: "0.3rem 0" }}>
-                              <span style={{ color: "#00F0FF", flexShrink: 0 }}>›</span> {b}
+                            <li key={j} className="bul">
+                              <span className="bul-dot">›</span>
+                              <span>{b}</span>
                             </li>
                           ))}
                         </ul>
-                      </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
         );
       }
 
+      /* ─────────────────── CONTACT ─────────────────── */
       function Contact() {
         const links = [
-          { label: "GitHub", href: "https://github.com/DanishAjma1", icon: "⌥" },
-          { label: "LinkedIn", href: "https://linkedin.com/in/danish-ajmal-b6a61b2a3/", icon: "in" },
-          { label: "Email", href: "mailto:danishajmalbutt@gmail.com", icon: "@" },
+          {
+            label: "GitHub",
+            href: "https://github.com/DanishAjma1",
+            icon: "gh",
+          },
+          {
+            label: "LinkedIn",
+            href: "https://linkedin.com/in/danish-ajmal/",
+            icon: "in",
+          },
+          {
+            label: "Email",
+            href: "mailto:danishajmalbutt@gmail.com",
+            icon: "@",
+          },
         ];
-
         return (
-          <section id="contact" style={{ padding: "5rem 2rem 3rem" }}>
-            <div style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
-              <SectionHeader label="LET'S BUILD" title="Get in Touch" centered />
-              <p style={{ color: "#94A3B8", marginTop: "1rem", lineHeight: 1.7 }}>
-                Open to full-time engineering roles in Pakistan and relocation to EU/Germany. Let's talk about systems worth building.
+          <section id="contact" className="sec" style={{ textAlign: "center" }}>
+            <div style={{ maxWidth: 580, margin: "0 auto" }}>
+              <SH label="LET'S BUILD" title="Get in Touch" center />
+              <p
+                className="muted"
+                style={{
+                  fontSize: ".875rem",
+                  lineHeight: 1.7,
+                  marginBottom: "2rem",
+                }}
+              >
+                Open to full-time remote roles worldwide and onsite roles in
+                Pakistan. Let's talk about systems worth building.
               </p>
-              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "2.5rem", flexWrap: "wrap" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: ".75rem",
+                  flexWrap: "wrap",
+                }}
+              >
                 {links.map((l) => (
                   <a
                     key={l.label}
                     href={l.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ background: "#12161F", border: "1px solid rgba(0,240,255,0.12)", color: "#F1F5F9", padding: "0.75rem 1.5rem", borderRadius: 10, textDecoration: "none", fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem", transition: "all 0.2s" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#00F0FF"; e.currentTarget.style.boxShadow = "0 0 16px rgba(0,240,255,0.15)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,240,255,0.12)"; e.currentTarget.style.boxShadow = "none"; }}
+                    className="card"
+                    style={{
+                      padding: "10px 20px",
+                      fontWeight: 600,
+                      fontSize: ".875rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 7,
+                      borderRadius: 10,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#00F0FF";
+                      e.currentTarget.style.boxShadow =
+                        "0 0 14px rgba(0,240,255,0.12)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor =
+                        "rgba(0,240,255,0.08)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
                   >
-                    <span style={{ fontFamily: "monospace", color: "#00F0FF", fontSize: "0.85rem" }}>{l.icon}</span>
+                    <span
+                      style={{
+                        fontFamily: "monospace",
+                        color: "#00F0FF",
+                        fontSize: 11,
+                      }}
+                    >
+                      {l.icon}
+                    </span>
                     {l.label}
                   </a>
                 ))}
               </div>
-
-              <div style={{ marginTop: "5rem", paddingTop: "2rem", borderTop: "1px solid rgba(148,163,184,0.08)", color: "#475569", fontSize: "0.8rem", fontFamily: "monospace" }}>
-                Danish Ajmal · Full-Stack Engineer · Built with React
+              <div
+                style={{
+                  marginTop: "3.5rem",
+                  paddingTop: "1.5rem",
+                  borderTop: "1px solid rgba(148,163,184,0.07)",
+                  color: "#475569",
+                  fontSize: 10,
+                  fontFamily: "monospace",
+                }}
+              >
+                Danish Ajmal · Full-Stack Engineer · Next.js · Node.js · Java
+                Spring Boot
               </div>
             </div>
           </section>
         );
       }
 
-      function SectionHeader({ label, title, centered = false }) {
+      /* ─────────────────── APP ─────────────────── */
+      function App() {
         return (
-          <div style={{ textAlign: centered ? "center" : "left" }}>
-            <p style={{ color: "#00F0FF", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.6rem" }}>
-              // {label}
-            </p>
-            <h2 style={{ color: "#F1F5F9", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, lineHeight: 1.2 }}>{title}</h2>
-          </div>
-        );
-      }
-
-      function Portfolio() {
-        return (
-          <div style={{ background: "#0A0C10", minHeight: "100vh", color: "#F1F5F9", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}>
+          <div
+            style={{
+              background: "#0A0C10",
+              minHeight: "100vh",
+              color: "#F1F5F9",
+            }}
+          >
             <Navbar />
             <Hero />
             <TechStack />
@@ -528,8 +1820,7 @@
         );
       }
 
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<Portfolio />);
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
     </script>
   </body>
 </html>
