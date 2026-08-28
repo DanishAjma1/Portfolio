@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danish Ajmal | Full-Stack Engineer Portfolio</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- React & ReactDOM CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel Standalone to compile JSX in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body { background: #0A0C10; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+
+      const NAV_LINKS = ["About", "Stack", "Projects", "SystemDesign", "Experience", "Contact"];
+
+      const TECH_STACK = {
+        "Frontend": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Redux / Zustand"],
+        "Backend & APIs": ["Java Spring Boot", "Node.js", "Express", "NestJS", "RESTful APIs", "GraphQL"],
+        "Databases & Caching": ["PostgreSQL", "MongoDB", "Redis", "Query Tuning", "Cache Eviction"],
+        "DevOps & Cloud": ["Docker", "Kubernetes (basics)", "GitHub Actions CI/CD", "AWS EC2/S3/Lambda", "LocalStack"],
+      };
+
+      const PROJECTS = [
+        {
+          id: 1,
+          title: "Multi-Courier & Fleet Management Platform",
+          type: "Enterprise System",
+          tech: ["Java Spring Boot", "PostgreSQL", "Redis", "Thymeleaf", "Docker", "GitHub Actions"],
+          description: "Enterprise multi-tenant system handling state machines for shipment lifecycles. Implemented role-based access control (RBAC) and query optimization to eliminate N+1 latency across high-volume courier operations.",
+          highlights: [
+            "Redis caching layer reducing DB hits by ~60%",
+            "Multi-stage Docker CI/CD pipeline — zero-downtime deploys",
+            "RBAC with granular tenant isolation across enterprise accounts",
+            "State machine architecture for shipment lifecycle management",
+          ],
+          accent: "#00F0FF",
+        },
+        {
+          id: 2,
+          title: "Enterprise Monorepo E-Commerce & Logistics Engine",
+          type: "Full-Stack Platform",
+          tech: ["Next.js (App Router)", "TypeScript", "Express.js", "BullMQ", "Redis", "Tailwind CSS"],
+          description: "Unified administrative platform with automated task queuing for background job processing and asynchronous event updates across a monorepo architecture serving multiple business units.",
+          highlights: [
+            "BullMQ job queues for async order processing at scale",
+            "Next.js App Router with SSR + ISR for dynamic catalog pages",
+            "Monorepo architecture with shared type contracts (TypeScript)",
+            "Real-time logistics event updates via Redis Pub/Sub",
+          ],
+          accent: "#10B981",
+        },
+      ];
+
+      const SYSTEM_DESIGN_CARDS = [
+        {
+          title: "Performance Optimization",
+          icon: "⚡",
+          accent: "#00F0FF",
+          items: [
+            "Redis caching strategies (TTL, LRU eviction policies)",
+            "JPA Query optimization & N+1 elimination",
+            "Next.js bundle reduction via dynamic imports",
+            "PostgreSQL index design for high-throughput queries",
+          ],
+        },
+        {
+          title: "DevOps & Reliability",
+          icon: "🔁",
+          accent: "#10B981",
+          items: [
+            "Multi-stage Docker builds for minimal image footprint",
+            "GitHub Actions CI/CD with automated test gates",
+            "LocalStack for AWS service simulation in dev",
+            "Zero-downtime blue/green deployment strategies",
+          ],
+        },
+        {
+          title: "Code Quality & Testing",
+          icon: "🧪",
+          accent: "#818CF8",
+          items: [
+            "JUnit 5 unit tests with Mockito for Spring Boot services",
+            "Testcontainers for real DB integration testing",
+            "Automated ESLint + Prettier enforcement in CI",
+            "PR review checklists & architecture decision records",
+          ],
+        },
+      ];
+
+      const EXPERIENCE = [
+        {
+          role: "Full Stack Developer",
+          company: "ABCDMedia.co.uk",
+          location: "Wazirabad, Pakistan (On-site)",
+          period: "Nov 2025 – May 2026",
+          bullets: [
+            "Architected multi-tenant CRM with JWT-based RBAC and PostgreSQL RLS, isolating 10+ enterprise accounts",
+            "Integrated OpenAI and Google Ads APIs to automate analytics workflows and reduce manual client operations",
+            "Built high-concurrency B2C platform with Next.js SSR and React.js hooks architecture; boosted engagement 20%",
+            "Reduced server response times 30% via query optimization and Redis caching across Node.js/PostgreSQL services",
+          ],
+        },
+        {
+          role: "Full Stack Developer",
+          company: "TrustBridge-AI Solutions",
+          location: "Gujrat, Pakistan (Remote)",
+          period: "Aug 2025 – Nov 2025",
+          bullets: [
+            "Designed RESTful APIs with Node.js/Express.js establishing clear data contracts for high-concurrency MERN platform",
+            "Built real-time collaboration platform using WebSockets and Socket.io managing concurrent sessions at scale",
+            "Integrated Stripe payment gateway (subscriptions, webhooks) and Agora WebRTC for peer-to-peer calling",
+            "Wrote MongoDB aggregation pipelines powering multi-stage analytics dashboards with complex transformation logic",
+          ],
+        },
+        {
+          role: "MERN Stack Developer",
+          company: "Developers Hub Corporation",
+          location: "Islamabad, Pakistan (Remote)",
+          period: "May 2025 – Aug 2025",
+          bullets: [
+            "Engineered modular e-commerce platform on MERN stack with MongoDB schemas and Express.js APIs for scale",
+            "Implemented JWT authentication and RBAC authorization across all platform routes; deployed on AWS with Nginx",
+            "Wrote unit and integration tests using Jest; integrated third-party APIs using modular adapter patterns",
+          ],
+        },
+        {
+          role: "Java Developer (Desktop Application)",
+          company: "Meganous Software",
+          location: "Gujrat, Pakistan (On-site)",
+          period: "Jan 2024 – Apr 2024",
+          bullets: [
+            "Built Java desktop application establishing OOP fundamentals: class hierarchies, interfaces, abstract classes",
+            "Integrated JDBC persistence layer with prepared statements, CRUD operations, and transaction management",
+            "Applied Factory and Singleton design patterns; developed event-driven GUI with JForms and validation",
+          ],
+        },
+      ];
+
+      function useTypewriter(words, speed = 80, pause = 1800) {
+        const [displayed, setDisplayed] = useState("");
+        const [wordIdx, setWordIdx] = useState(0);
+        const [charIdx, setCharIdx] = useState(0);
+        const [deleting, setDeleting] = useState(false);
+
+        useEffect(() => {
+          const current = words[wordIdx];
+          let timeout;
+          if (!deleting && charIdx <= current.length) {
+            timeout = setTimeout(() => {
+              setDisplayed(current.slice(0, charIdx));
+              setCharIdx((c) => c + 1);
+            }, speed);
+          } else if (!deleting && charIdx > current.length) {
+            timeout = setTimeout(() => setDeleting(true), pause);
+          } else if (deleting && charIdx > 0) {
+            timeout = setTimeout(() => {
+              setDisplayed(current.slice(0, charIdx - 1));
+              setCharIdx((c) => c - 1);
+            }, speed / 2);
+          } else {
+            setDeleting(false);
+            setWordIdx((i) => (i + 1) % words.length);
+          }
+          return () => clearTimeout(timeout);
+        }, [charIdx, deleting, wordIdx, words, speed, pause]);
+
+        return displayed;
+      }
+
+      function Navbar() {
+        const [scrolled, setScrolled] = useState(false);
+        useEffect(() => {
+          const fn = () => setScrolled(window.scrollY > 20);
+          window.addEventListener("scroll", fn);
+          return () => window.removeEventListener("scroll", fn);
+        }, []);
+
+        return (
+          <nav
+            style={{
+              position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+              background: scrolled ? "rgba(10,12,16,0.85)" : "transparent",
+              backdropFilter: scrolled ? "blur(12px)" : "none",
+              borderBottom: scrolled ? "1px solid rgba(0,240,255,0.08)" : "none",
+              transition: "all 0.3s ease",
+              padding: "0 2rem",
+            }}
+          >
+            <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
+              <span style={{ fontFamily: "monospace", fontSize: "1.3rem", fontWeight: 700, color: "#00F0FF", textShadow: "0 0 12px rgba(0,240,255,0.6)" }}>
+                {"<DA />"}
+              </span>
+              <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
+                {NAV_LINKS.map((link) => (
+                  <a
+                    key={link}
+                    href={`#${link.toLowerCase()}`}
+                    style={{ color: "#94A3B8", textDecoration: "none", fontSize: "0.875rem", fontWeight: 500, transition: "color 0.2s" }}
+                    onMouseEnter={(e) => (e.target.style.color = "#00F0FF")}
+                    onMouseLeave={(e) => (e.target.style.color = "#94A3B8")}
+                  >
+                    {link}
+                  </a>
+                ))}
+                <a
+                  href="#contact"
+                  style={{
+                    border: "1px solid #00F0FF", color: "#00F0FF", padding: "0.4rem 1rem",
+                    borderRadius: 6, fontSize: "0.875rem", textDecoration: "none", fontWeight: 600,
+                    transition: "all 0.2s", boxShadow: "0 0 8px rgba(0,240,255,0.15)",
+                  }}
+                  onMouseEnter={(e) => { e.target.style.background = "rgba(0,240,255,0.1)"; e.target.style.boxShadow = "0 0 16px rgba(0,240,255,0.35)"; }}
+                  onMouseLeave={(e) => { e.target.style.background = "transparent"; e.target.style.boxShadow = "0 0 8px rgba(0,240,255,0.15)"; }}
+                >
+                  View Resume
+                </a>
+              </div>
+            </div>
+          </nav>
+        );
+      }
+
+      function Hero() {
+        const typed = useTypewriter([
+          "Scalable Microservices",
+          "High-Throughput APIs",
+          "Cloud-Native Systems",
+          "Enterprise Applications",
+          "Next.js Full-Stack Platforms",
+        ]);
+
+        return (
+          <section id="about" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", padding: "6rem 2rem 4rem", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)", width: 600, height: 600, background: "radial-gradient(circle, rgba(0,240,255,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: 20, padding: "0.4rem 1rem", marginBottom: "2rem", fontSize: "0.8rem", color: "#10B981", fontWeight: 600 }}>
+              🟢 Available for Full-Time Roles (Pakistan & Relocation to EU/Germany)
+            </div>
+
+            <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 800, color: "#F1F5F9", lineHeight: 1.15, maxWidth: 800, marginBottom: "1rem" }}>
+              Engineering High-Throughput<br />
+              <span style={{ color: "#00F0FF" }}>Web Platforms</span> & Scalable Systems
+            </h1>
+
+            <div style={{ fontFamily: "monospace", fontSize: "clamp(1rem, 2.5vw, 1.25rem)", color: "#94A3B8", marginBottom: "1.5rem", minHeight: "2rem" }}>
+              <span style={{ color: "#00F0FF" }}>$ </span>
+              <span style={{ color: "#F1F5F9" }}>architect</span>
+              <span style={{ color: "#94A3B8" }}> --focus </span>
+              <span style={{ color: "#10B981" }}>{typed}</span>
+              <span style={{ color: "#00F0FF", animation: "blink 1s step-end infinite" }}>▮</span>
+            </div>
+
+            <p style={{ color: "#94A3B8", fontSize: "1rem", maxWidth: 640, lineHeight: 1.7, marginBottom: "2.5rem" }}>
+              Full-Stack Engineer with 2+ years building production-grade web applications using Next.js, TypeScript, Node.js, and Java Spring Boot — focused on systems that perform under pressure.
+            </p>
+
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+              <a href="#systemdesign" style={{ background: "#00F0FF", color: "#0A0C10", padding: "0.75rem 1.75rem", borderRadius: 8, fontWeight: 700, textDecoration: "none", fontSize: "0.95rem", boxShadow: "0 0 24px rgba(0,240,255,0.3)", transition: "box-shadow 0.2s" }}
+                onMouseEnter={(e) => (e.target.style.boxShadow = "0 0 40px rgba(0,240,255,0.55)")}
+                onMouseLeave={(e) => (e.target.style.boxShadow = "0 0 24px rgba(0,240,255,0.3)")}>
+                Explore Architecture
+              </a>
+              <a href="#contact" style={{ border: "1px solid rgba(148,163,184,0.3)", color: "#F1F5F9", padding: "0.75rem 1.75rem", borderRadius: 8, fontWeight: 600, textDecoration: "none", fontSize: "0.95rem", transition: "border-color 0.2s" }}
+                onMouseEnter={(e) => (e.target.style.borderColor = "#00F0FF")}
+                onMouseLeave={(e) => (e.target.style.borderColor = "rgba(148,163,184,0.3)")}>
+                Get in Touch
+              </a>
+            </div>
+
+            <style>{`@keyframes blink { 50% { opacity: 0; } }`}</style>
+          </section>
+        );
+      }
+
+      function TechStack() {
+        return (
+          <section id="stack" style={{ padding: "5rem 2rem", maxWidth: 1200, margin: "0 auto" }}>
+            <SectionHeader label="CAPABILITIES" title="Tech Stack Matrix" />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.25rem", marginTop: "3rem" }}>
+              {Object.entries(TECH_STACK).map(([category, items]) => (
+                <div key={category} style={{ background: "#12161F", border: "1px solid rgba(0,240,255,0.08)", borderRadius: 12, padding: "1.5rem", transition: "border-color 0.2s, box-shadow 0.2s" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,240,255,0.3)"; e.currentTarget.style.boxShadow = "0 0 20px rgba(0,240,255,0.06)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,240,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}>
+                  <p style={{ color: "#00F0FF", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem", fontFamily: "monospace" }}>
+                    {category}
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                    {items.map((item) => (
+                      <span key={item} style={{ background: "rgba(0,240,255,0.06)", border: "1px solid rgba(0,240,255,0.12)", color: "#CBD5E1", padding: "0.3rem 0.7rem", borderRadius: 6, fontSize: "0.8rem", fontWeight: 500 }}>
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      function Projects() {
+        const [activeProject, setActiveProject] = useState(null);
+
+        return (
+          <section id="projects" style={{ padding: "5rem 2rem", background: "rgba(18,22,31,0.4)" }}>
+            <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+              <SectionHeader label="FEATURED WORK" title="Production Projects" />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", marginTop: "3rem" }}>
+                {PROJECTS.map((project) => (
+                  <div
+                    key={project.id}
+                    onClick={() => setActiveProject(project)}
+                    style={{ background: "#12161F", border: `1px solid rgba(0,240,255,0.08)`, borderRadius: 14, padding: "2rem", cursor: "pointer", transition: "all 0.2s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = project.accent + "55"; e.currentTarget.style.boxShadow = `0 0 24px ${project.accent}10`; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,240,255,0.08)"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none"; }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                      <span style={{ background: `${project.accent}15`, border: `1px solid ${project.accent}33`, color: project.accent, padding: "0.25rem 0.6rem", borderRadius: 6, fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em" }}>
+                        {project.type}
+                      </span>
+                      <span style={{ color: "#475569", fontSize: "1.1rem" }}>↗</span>
+                    </div>
+                    <h3 style={{ color: "#F1F5F9", fontWeight: 700, fontSize: "1.05rem", marginBottom: "0.75rem", lineHeight: 1.4 }}>{project.title}</h3>
+                    <p style={{ color: "#94A3B8", fontSize: "0.875rem", lineHeight: 1.6, marginBottom: "1.25rem" }}>{project.description}</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                      {project.tech.slice(0, 4).map((t) => (
+                        <span key={t} style={{ background: "rgba(148,163,184,0.07)", color: "#64748B", padding: "0.2rem 0.5rem", borderRadius: 4, fontSize: "0.72rem", fontFamily: "monospace" }}>{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {activeProject && (
+              <div onClick={() => setActiveProject(null)} style={{ position: "fixed", inset: 0, background: "rgba(10,12,16,0.85)", backdropFilter: "blur(8px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+                <div onClick={(e) => e.stopPropagation()} style={{ background: "#12161F", border: `1px solid ${activeProject.accent}44`, borderRadius: 16, padding: "2.5rem", maxWidth: 600, width: "100%", boxShadow: `0 0 60px ${activeProject.accent}15` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+                    <span style={{ color: activeProject.accent, fontFamily: "monospace", fontSize: "0.8rem", fontWeight: 700 }}>{activeProject.type}</span>
+                    <button onClick={() => setActiveProject(null)} style={{ background: "none", border: "none", color: "#94A3B8", cursor: "pointer", fontSize: "1.2rem" }}>✕</button>
+                  </div>
+                  <h2 style={{ color: "#F1F5F9", fontWeight: 800, fontSize: "1.25rem", marginBottom: "1rem" }}>{activeProject.title}</h2>
+                  <p style={{ color: "#94A3B8", fontSize: "0.9rem", lineHeight: 1.7, marginBottom: "1.5rem" }}>{activeProject.description}</p>
+                  <p style={{ color: activeProject.accent, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", marginBottom: "0.75rem", fontFamily: "monospace" }}>KEY HIGHLIGHTS</p>
+                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1.5rem" }}>
+                    {activeProject.highlights.map((h, i) => (
+                      <li key={i} style={{ color: "#CBD5E1", fontSize: "0.875rem", padding: "0.4rem 0", borderBottom: "1px solid rgba(148,163,184,0.06)", display: "flex", gap: "0.75rem" }}>
+                        <span style={{ color: activeProject.accent, flexShrink: 0 }}>→</span> {h}
+                      </li>
+                    ))}
+                  </ul>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                    {activeProject.tech.map((t) => (
+                      <span key={t} style={{ background: `${activeProject.accent}10`, border: `1px solid ${activeProject.accent}22`, color: activeProject.accent, padding: "0.25rem 0.6rem", borderRadius: 5, fontSize: "0.75rem", fontFamily: "monospace" }}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+        );
+      }
+
+      function SystemDesign() {
+        const [active, setActive] = useState(0);
+        const card = SYSTEM_DESIGN_CARDS[active];
+
+        return (
+          <section id="systemdesign" style={{ padding: "5rem 2rem", maxWidth: 1200, margin: "0 auto" }}>
+            <SectionHeader label="ENGINEERING STRENGTHS" title="System Architecture" />
+            <div style={{ marginTop: "3rem", display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "2rem", alignItems: "start" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                {SYSTEM_DESIGN_CARDS.map((c, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActive(i)}
+                    style={{
+                      background: active === i ? `${c.accent}10` : "#12161F",
+                      border: `1px solid ${active === i ? c.accent + "44" : "rgba(0,240,255,0.08)"}`,
+                      borderRadius: 10, padding: "1rem 1.25rem", cursor: "pointer", textAlign: "left",
+                      transition: "all 0.2s", display: "flex", alignItems: "center", gap: "0.75rem",
+                    }}
+                  >
+                    <span style={{ fontSize: "1.3rem" }}>{c.icon}</span>
+                    <span style={{ color: active === i ? c.accent : "#94A3B8", fontWeight: 600, fontSize: "0.9rem" }}>{c.title}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ background: "#12161F", border: `1px solid ${card.accent}33`, borderRadius: 14, padding: "2rem", boxShadow: `0 0 30px ${card.accent}08` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
+                  <span style={{ fontSize: "1.5rem" }}>{card.icon}</span>
+                  <h3 style={{ color: card.accent, fontWeight: 700, fontSize: "1.1rem" }}>{card.title}</h3>
+                </div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  {card.items.map((item, i) => (
+                    <li key={i} style={{ display: "flex", gap: "0.75rem", padding: "0.75rem 0", borderBottom: i < card.items.length - 1 ? "1px solid rgba(148,163,184,0.07)" : "none" }}>
+                      <span style={{ color: card.accent, fontFamily: "monospace", fontSize: "0.85rem", flexShrink: 0, paddingTop: "0.05rem" }}>{"0" + (i + 1)}</span>
+                      <span style={{ color: "#CBD5E1", fontSize: "0.9rem", lineHeight: 1.6 }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function Experience() {
+        return (
+          <section id="experience" style={{ padding: "5rem 2rem", background: "rgba(18,22,31,0.4)" }}>
+            <div style={{ maxWidth: 900, margin: "0 auto" }}>
+              <SectionHeader label="TRACK RECORD" title="Work Experience" />
+              <div style={{ marginTop: "3rem", position: "relative" }}>
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 1, background: "linear-gradient(to bottom, #00F0FF33, transparent)" }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem", paddingLeft: "2rem" }}>
+                  {EXPERIENCE.map((exp, i) => (
+                    <div key={i} style={{ position: "relative" }}>
+                      <div style={{ position: "absolute", left: "-2.375rem", top: 4, width: 10, height: 10, borderRadius: "50%", background: i === 0 ? "#00F0FF" : "#1E293B", border: "2px solid #00F0FF", boxShadow: i === 0 ? "0 0 10px rgba(0,240,255,0.6)" : "none" }} />
+                      <div style={{ background: "#12161F", border: "1px solid rgba(0,240,255,0.08)", borderRadius: 12, padding: "1.5rem 1.75rem", transition: "border-color 0.2s" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(0,240,255,0.25)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(0,240,255,0.08)")}>
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem", gap: "0.5rem" }}>
+                          <div>
+                            <h3 style={{ color: "#F1F5F9", fontWeight: 700, fontSize: "1rem" }}>{exp.role}</h3>
+                            <p style={{ color: "#00F0FF", fontSize: "0.875rem", fontWeight: 600 }}>{exp.company}</p>
+                          </div>
+                          <div style={{ textAlign: "right" }}>
+                            <span style={{ color: "#94A3B8", fontSize: "0.8rem", fontFamily: "monospace" }}>{exp.period}</span>
+                            <p style={{ color: "#475569", fontSize: "0.75rem", marginTop: "0.2rem" }}>{exp.location}</p>
+                          </div>
+                        </div>
+                        <ul style={{ margin: "1rem 0 0", padding: 0, listStyle: "none" }}>
+                          {exp.bullets.map((b, j) => (
+                            <li key={j} style={{ display: "flex", gap: "0.6rem", color: "#94A3B8", fontSize: "0.855rem", lineHeight: 1.6, padding: "0.3rem 0" }}>
+                              <span style={{ color: "#00F0FF", flexShrink: 0 }}>›</span> {b}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function Contact() {
+        const links = [
+          { label: "GitHub", href: "https://github.com/DanishAjma1", icon: "⌥" },
+          { label: "LinkedIn", href: "https://linkedin.com/in/danish-ajmal-b6a61b2a3/", icon: "in" },
+          { label: "Email", href: "mailto:danishajmalbutt@gmail.com", icon: "@" },
+        ];
+
+        return (
+          <section id="contact" style={{ padding: "5rem 2rem 3rem" }}>
+            <div style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
+              <SectionHeader label="LET'S BUILD" title="Get in Touch" centered />
+              <p style={{ color: "#94A3B8", marginTop: "1rem", lineHeight: 1.7 }}>
+                Open to full-time engineering roles in Pakistan and relocation to EU/Germany. Let's talk about systems worth building.
+              </p>
+              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "2.5rem", flexWrap: "wrap" }}>
+                {links.map((l) => (
+                  <a
+                    key={l.label}
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ background: "#12161F", border: "1px solid rgba(0,240,255,0.12)", color: "#F1F5F9", padding: "0.75rem 1.5rem", borderRadius: 10, textDecoration: "none", fontWeight: 600, fontSize: "0.9rem", display: "flex", alignItems: "center", gap: "0.5rem", transition: "all 0.2s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#00F0FF"; e.currentTarget.style.boxShadow = "0 0 16px rgba(0,240,255,0.15)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,240,255,0.12)"; e.currentTarget.style.boxShadow = "none"; }}
+                  >
+                    <span style={{ fontFamily: "monospace", color: "#00F0FF", fontSize: "0.85rem" }}>{l.icon}</span>
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+
+              <div style={{ marginTop: "5rem", paddingTop: "2rem", borderTop: "1px solid rgba(148,163,184,0.08)", color: "#475569", fontSize: "0.8rem", fontFamily: "monospace" }}>
+                Danish Ajmal · Full-Stack Engineer · Built with React
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function SectionHeader({ label, title, centered = false }) {
+        return (
+          <div style={{ textAlign: centered ? "center" : "left" }}>
+            <p style={{ color: "#00F0FF", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.6rem" }}>
+              // {label}
+            </p>
+            <h2 style={{ color: "#F1F5F9", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, lineHeight: 1.2 }}>{title}</h2>
+          </div>
+        );
+      }
+
+      function Portfolio() {
+        return (
+          <div style={{ background: "#0A0C10", minHeight: "100vh", color: "#F1F5F9", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}>
+            <Navbar />
+            <Hero />
+            <TechStack />
+            <Projects />
+            <SystemDesign />
+            <Experience />
+            <Contact />
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<Portfolio />);
+    </script>
+  </body>
+</html>
